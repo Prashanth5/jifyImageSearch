@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jify_image_search/model/image_model.dart';
 import 'package:jify_image_search/service/api_helper.dart';
 import 'package:jify_image_search/ui/image_listtile.dart';
+import 'package:jify_image_search/viewmodel/my_home_viewmodel.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,15 +33,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<List<Hit>> imageHits;
+  MyHomeViewModel homeViewModel = MyHomeViewModel();
   @override
   void initState() {
-    setUpApiWithSearchItem();
+    homeViewModel.setUpApiWithSearchItem();
     super.initState();
-  }
-
-  void setUpApiWithSearchItem({String item = 'flower'}) {
-    imageHits = ApiHelper().getImages(searchItem: item);
   }
 
   @override
@@ -60,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: TextField(
             onSubmitted: (value) {
               setState(() {
-                setUpApiWithSearchItem(item: value);
+                homeViewModel.setUpApiWithSearchItem(item: value);
               });
             },
             decoration: InputDecoration(
@@ -76,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   FutureBuilder<List<Hit>> buildFutureBuilderListView() {
     return FutureBuilder<List<Hit>>(
-      future: imageHits,
+      future: homeViewModel.imageHits,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -86,7 +83,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         } else if (snapshot.hasData) {
-          return buildListView(snapshot);
+          if (snapshot.data.length > 0) {
+            return buildListView(snapshot);
+          } else {
+            return Center(
+              child: Text('No Data Found.'),
+            );
+          }
         } else {
           return const Center(
             child: CircularProgressIndicator(),
