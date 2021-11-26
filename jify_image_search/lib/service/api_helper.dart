@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:jify_image_search/utils/constants.dart';
 
 class ApiHelper {
-  Future<List<Hit>> getImages({String searchItem}) async {
-    final queryString = "&q=" + searchItem + "&image_type=photo&pretty=true";
+  Future<List<Hit>> getImages({String searchItem, int page}) async {
+    final queryString =
+        "&q=" + searchItem + "&image_type=photo&pretty=true&page=$page";
     var url = Constants.baseuri + Constants.apikey + queryString;
     var response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
