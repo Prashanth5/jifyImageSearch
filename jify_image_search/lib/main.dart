@@ -31,19 +31,35 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Future<List<Hit>> imageHits;
   Future<List<Hit>> tempImageHits;
+  List<Hit> imageList = List<Hit>();
+  List<Hit> tempImageList = List<Hit>();
   ScrollController _scrollController = new ScrollController();
   var pageCount = 1;
   var userInput = "";
   bool isLoading = false;
+  // @override
+  // void initState() {
+  //   setUpApiWithSearchItem();
+  //   _scrollController.addListener(() {
+  //     if (_scrollController.position.pixels ==
+  //             _scrollController.position.maxScrollExtent &&
+  //         !isLoading) {
+  //       print('NEW DATA CALLED');
+  //       userInput = (userInput.length > 0) ? userInput : 'Flower';
+  //       setUpApiWithSearchItem(item: userInput);
+  //     }
+  //   });
+  //   super.initState();
+  // }
   @override
   void initState() {
-    setUpApiWithSearchItem();
+    setUpApiWithSearchItem2();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           !isLoading) {
         userInput = (userInput.length > 0) ? userInput : 'Flower';
-        setUpApiWithSearchItem(item: userInput);
+        setUpApiWithSearchItem2(item: userInput);
       }
     });
     super.initState();
@@ -74,13 +90,33 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void setUpApiWithSearchItem2({String item = 'flower'}) async {
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+
+    tempImageList =
+        await ApiHelper().getImages(searchItem: item, page: pageCount);
+
+    if (tempImageList.isNotEmpty) {
+      imageList.addAll(tempImageList);
+      pageCount++;
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: buildSearchContainer(),
       ),
-      body: buildFutureBuilderListView(),
+      // body: buildFutureBuilderListView(),
+      body: getListView(),
     );
   }
 
@@ -160,6 +196,30 @@ class _MyHomePageState extends State<MyHomePage> {
           child: new CircularProgressIndicator(),
         ),
       ),
+    );
+  }
+
+  Widget getListView() {
+    return Stack(
+      children: [
+        ListView.builder(
+            itemCount: imageList.length,
+            controller: _scrollController,
+            itemBuilder: (context, index) {
+              return ImageListTile(imageList[index]);
+            }),
+        if (isLoading) ...[
+          Positioned(
+            child: Container(
+              height: 80,
+              width: MediaQuery.of(context).size.width,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            left: 0,
+            bottom: 0,
+          )
+        ]
+      ],
     );
   }
 }
