@@ -1,0 +1,101 @@
+// More examples of bad Dart code
+
+// 1. Overly complex conditional logic:
+
+bool isEligible(int age, bool hasLicense, bool hasCar, bool hasInsurance) {
+  if (age >= 18) {
+    if (hasLicense) {
+      if (hasCar) {
+        if (hasInsurance) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+} // Should be simplified using &&
+
+// 2. Mutable state where it's not needed:
+
+List<int> numbers = [1, 2, 3];
+numbers.add(4); // numbers should be final if it's not supposed to change
+
+// 3. Magic numbers:
+
+double calculateDiscount(double price) {
+  return price * 0.15; // What is 0.15? Should be a named constant.
+}
+
+// 4. Deeply nested loops:
+
+void processData(List<List<int>> data) {
+  for (int i = 0; i < data.length; i++) {
+    for (int j = 0; j < data[i].length; j++) {
+      for (int k = 0; k < data[i][j]; k++) {
+        // ... some complex logic ...
+      }
+    }
+  }
+} // Often indicates a need for refactoring.
+
+// 5. Ignoring return values:
+
+Future<int> fetchData() async {
+  // ... some asynchronous operation ...
+  return 42;
+}
+
+void main() async {
+  fetchData(); // The returned Future is ignored.  Should be awaited.
+}
+
+// 6. Unnecessary use of null checks:
+
+String? name;
+
+if (name != null) {
+  print(name);
+} else {
+  print(null); // Just print(name) is sufficient.
+}
+
+// 7. Overuse of try-catch without a specific exception:
+
+void doSomething() {
+  try {
+    // ... some code that might throw an exception ...
+  } catch (e) { // Catching just 'e' is not good, it can catch any exception
+    print('An error occurred'); // Not helpful for debugging
+  }
+}
+
+// 8. Code duplication:
+
+int calculateArea(int length, int width) {
+  return length * width;
+}
+
+int calculateVolume(int length, int width, int height) {
+  return length * width * height;  // length * width is duplicated from calculateArea
+}
+
+// 9.  Comments that state the obvious:
+
+int x = 10; // x is an integer variable. // This comment is redundant.
+
+// 10. Functions doing too many things:
+
+void processOrder(Order order) {
+  // 1. Validate the order
+  // 2. Calculate the total price
+  // 3. Update inventory
+  // 4. Send confirmation email
+  // 5. Log the transaction
+} // Should be broken down into smaller, more focused functions.
