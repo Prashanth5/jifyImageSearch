@@ -1,3 +1,4 @@
+class ClassName{
 // More examples of bad Dart code
 
 // 1. Overly complex conditional logic:
@@ -99,3 +100,4 @@ void processOrder(Order order) {
   // 4. Send confirmation email
   // 5. Log the transaction
 } // Should be broken down into smaller, more focused functions.
+}
